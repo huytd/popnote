@@ -15,12 +15,25 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
         self.font = StyleKit.codeFont
     }
     
-    func lines(with: String) -> [NSRange]? {
+    func lines(startWith: String) -> [NSRange]? {
         let text = self.textStorage?.string
         let lines = text?.components(separatedBy: "\n")
         var ranges = [NSRange]()
         for line in lines! {
-            if (line.hasPrefix(with)) {
+            if (line.hasPrefix(startWith)) {
+                let lineIndex = text?.range(of: line)?.lowerBound
+                ranges.append(NSRange(location: (text?.distance(from: (text?.startIndex)!, to: lineIndex!))!, length: line.characters.count))
+            }
+        }
+        return ranges
+    }
+    
+    func lines(has: String) -> [NSRange]? {
+        let text = self.textStorage?.string
+        let lines = text?.components(separatedBy: "\n")
+        var ranges = [NSRange]()
+        for line in lines! {
+            if (line.contains(has)) {
                 let lineIndex = text?.range(of: line)?.lowerBound
                 ranges.append(NSRange(location: (text?.distance(from: (text?.startIndex)!, to: lineIndex!))!, length: line.characters.count))
             }
@@ -58,6 +71,7 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
     func resetStyle(range: NSRange) {
         self.textStorage?.removeAttribute(NSForegroundColorAttributeName, range: range)
         self.textStorage?.removeAttribute(NSStrokeWidthAttributeName, range: range)
+        self.textStorage?.removeAttribute(NSStrikethroughStyleAttributeName, range: range)
     }
     
     // MARK: - Text Storage
@@ -69,18 +83,30 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
         if (n > 0) {
             self.resetStyle(range: NSRange(location: 0, length: n))
             
-            if let headerRanges = lines(with: "#") {
+            if let checkBoxesRanges = lines(has: " [x] ") {
+                for checkBox in checkBoxesRanges {
+                    self.setColor(range: checkBox, color: NSColor.markdownQuotes())
+                    self.setStrike(range: checkBox)
+                }
+            }
+            if let checkBoxesEmptyRanges = matches(regex: "\\s\\[\\s\\]\\s") {
+                for checkBox in checkBoxesEmptyRanges {
+                    self.setColor(range: checkBox, color: NSColor.markdownCode())
+                }
+            }
+            
+            if let headerRanges = lines(startWith: "#") {
                 for header in headerRanges {
                     self.setColor(range: header, color: NSColor.markdownHeaders())
                     self.setBold(range: header)
                 }
             }
-            if let codeRanges = lines(with: "\t") {
+            if let codeRanges = lines(startWith: "\t") {
                 for code in codeRanges {
                     self.setColor(range: code, color: NSColor.markdownCode())
                 }
             }
-            if let quoteRanges = lines(with: ">") {
+            if let quoteRanges = lines(startWith: ">") {
                 for quote in quoteRanges {
                     self.setColor(range: quote, color: NSColor.markdownQuotes())
                 }
@@ -114,6 +140,12 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
                 for num in numberedRanges {
                     self.setColor(range: num, color: NSColor.markdownList())
                     self.setBold(range: num)
+                }
+            }
+            if let dashListRanges = matches(regex: "-\\s[\\S\\s]*?") {
+                for dash in dashListRanges {
+                    self.setColor(range: dash, color: NSColor.markdownList())
+                    self.setBold(range: dash)
                 }
             }
         }
