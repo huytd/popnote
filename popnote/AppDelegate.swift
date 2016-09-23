@@ -35,6 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     
     func hidePopup(sender: AnyObject) {
         popover.performClose(sender)
+        self.canOpenPopup = true
     }
     
     func onPopup(sender: AnyObject) {
@@ -156,14 +157,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     }
     
     func applicationDidBecomeActive(_ notification: Notification) {
-        self.canOpenPopup = false
         self.fillData()
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         if let button = statusItem.button {
-            button.image = NSImage(named: "desktop-monitor")
+            let image = NSImage(named: "desktop-monitor")
+            image?.isTemplate = true
+            button.image = image
             button.action = #selector(onPopup)
         }
         
@@ -183,11 +185,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     func windowWillClose(_ notification: Notification) {
         self.canOpenPopup = true
     }
-    
-    func windowDidExpose(_ notification: Notification) {
-        self.canOpenPopup = false
-    }
-    
 
     // MARK: - Core Data stack
 
