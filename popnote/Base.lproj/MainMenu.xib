@@ -16,6 +16,7 @@
             <connections>
                 <outlet property="editor" destination="kRV-ZZ-F9T" id="l6N-dS-XiD"/>
                 <outlet property="noteTableView" destination="IGr-29-9Ez" id="LdR-Ml-Ywm"/>
+                <outlet property="statusLabel" destination="1hH-Qx-6KE" id="zbM-39-DxW"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -72,7 +73,7 @@
                         <items>
                             <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
                                 <connections>
-                                    <action selector="newDocument:" target="-1" id="4Si-XN-c54"/>
+                                    <action selector="newDocumentWithSender:" target="Voe-Tx-rLC" id="uDW-Oz-iew"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
@@ -684,7 +685,7 @@ CA
             </items>
             <point key="canvasLocation" x="-3" y="281"/>
         </menu>
-        <window title="popnote" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
+        <window title="popnote" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <rect key="contentRect" x="335" y="390" width="821" height="555"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
@@ -788,16 +789,16 @@ CA
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owe-3j-3YF">
-                                        <rect key="frame" x="10" y="0.0" width="574" height="545"/>
+                                        <rect key="frame" x="10" y="0.0" width="574" height="521"/>
                                         <clipView key="contentView" id="RJs-Vq-cc9">
-                                            <rect key="frame" x="0.0" y="0.0" width="574" height="545"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="574" height="521"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <textView importsGraphics="NO" usesFontPanel="YES" findStyle="panel" allowsUndo="YES" usesRuler="YES" quoteSubstitution="YES" dashSubstitution="YES" spellingCorrection="YES" smartInsertDelete="YES" id="kRV-ZZ-F9T" customClass="EditorView" customModule="popnote" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="574" height="545"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="574" height="521"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <size key="minSize" width="574" height="545"/>
+                                                    <size key="minSize" width="574" height="521"/>
                                                     <size key="maxSize" width="734" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
@@ -809,16 +810,30 @@ CA
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="etA-Tf-L7p">
-                                            <rect key="frame" x="558" y="0.0" width="16" height="545"/>
+                                            <rect key="frame" x="558" y="0.0" width="16" height="521"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1hH-Qx-6KE">
+                                        <rect key="frame" x="8" y="529" width="571" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="567" id="lBd-2K-ilb"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Note name" id="0RE-6C-ToQ">
+                                            <font key="font" size="13" name="Menlo-Regular"/>
+                                            <color key="textColor" name="controlShadowColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstItem="1hH-Qx-6KE" firstAttribute="top" secondItem="keG-kb-GH5" secondAttribute="top" constant="9" id="4P8-aB-kuw"/>
+                                    <constraint firstItem="1hH-Qx-6KE" firstAttribute="leading" secondItem="owe-3j-3YF" secondAttribute="leading" id="Nay-k9-bl0"/>
                                     <constraint firstAttribute="trailing" secondItem="owe-3j-3YF" secondAttribute="trailing" id="cug-ZW-Xvb"/>
-                                    <constraint firstItem="owe-3j-3YF" firstAttribute="top" secondItem="keG-kb-GH5" secondAttribute="top" constant="10" id="ddR-w4-6ct"/>
+                                    <constraint firstItem="owe-3j-3YF" firstAttribute="top" secondItem="keG-kb-GH5" secondAttribute="top" constant="34" id="ddR-w4-6ct"/>
                                     <constraint firstItem="owe-3j-3YF" firstAttribute="leading" secondItem="keG-kb-GH5" secondAttribute="leading" constant="10" id="eBJ-Il-f6F"/>
                                     <constraint firstAttribute="bottom" secondItem="owe-3j-3YF" secondAttribute="bottom" id="q8z-9b-mWA"/>
+                                    <constraint firstItem="owe-3j-3YF" firstAttribute="top" secondItem="1hH-Qx-6KE" secondAttribute="bottom" constant="8" symbolic="YES" id="zZg-HR-aPd"/>
                                 </constraints>
                             </customView>
                         </subviews>

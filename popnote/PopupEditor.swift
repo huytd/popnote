@@ -15,7 +15,6 @@ class PopupEditor: NSViewController, NSTextStorageDelegate {
         super.viewDidLoad()
         // Do view setup here.
         self.view.wantsLayer = true
-        self.textEditor.textStorage?.delegate = self
     }
     
     override func viewWillAppear() {
@@ -27,10 +26,6 @@ class PopupEditor: NSViewController, NSTextStorageDelegate {
         didSet {
             // Update the view, if already loaded.
         }
-    }
-    
-    func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
-        (NSApplication.shared().delegate as! AppDelegate).currentEditContent = textStorage.string
     }
     
     @IBAction func openClick(_ sender: AnyObject) {

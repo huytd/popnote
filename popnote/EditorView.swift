@@ -39,58 +39,81 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
         return ranges
     }
     
+    func setBold(range: NSRange) {
+        self.textStorage?.addAttribute(NSStrokeWidthAttributeName, value: -5, range: range)
+    }
+    
+    func setNormal(range: NSRange) {
+        self.textStorage?.removeAttribute(NSStrokeWidthAttributeName, range: range)
+    }
+    
+    func setColor(range: NSRange, color: NSColor) {
+        self.textStorage?.addAttribute(NSForegroundColorAttributeName, value: color, range: range)
+    }
+    
+    func setStrike(range: NSRange) {
+        self.textStorage?.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: range)
+    }
+    
+    func resetStyle(range: NSRange) {
+        self.textStorage?.removeAttribute(NSForegroundColorAttributeName, range: range)
+        self.textStorage?.removeAttribute(NSStrokeWidthAttributeName, range: range)
+    }
+    
     // MARK: - Text Storage
     
     func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
         let content = textStorage.string
+        (NSApplication.shared().delegate as! AppDelegate).currentEditContent = content
         let n = content.characters.count
-        textStorage.removeAttribute(NSForegroundColorAttributeName, range: NSRange(location: 0, length: n))
         if (n > 0) {
+            self.resetStyle(range: NSRange(location: 0, length: n))
+            
             if let headerRanges = lines(with: "#") {
                 for header in headerRanges {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownHeaders(), range: header)
-                    textStorage.addAttribute(NSStrokeWidthAttributeName, value: -5, range: header)
+                    self.setColor(range: header, color: NSColor.markdownHeaders())
+                    self.setBold(range: header)
                 }
             }
             if let codeRanges = lines(with: "\t") {
                 for code in codeRanges {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownCode(), range: code)
+                    self.setColor(range: code, color: NSColor.markdownCode())
                 }
             }
             if let quoteRanges = lines(with: ">") {
                 for quote in quoteRanges {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownQuotes(), range: quote)
+                    self.setColor(range: quote, color: NSColor.markdownQuotes())
                 }
             }
             if let inlineCodes = matches(regex: "`.*?`") {
                 for code in inlineCodes {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownCode(), range: code)
+                    self.setColor(range: code, color: NSColor.markdownCode())
                 }
             }
             if let codeBlocks = matches(regex: "```[\\S\\s]*?```") {
                 for code in codeBlocks {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownCodeBlock(), range: code)
+                    self.setColor(range: code, color: NSColor.markdownCodeBlock())
                 }
             }
             if let linkRanges = matches(regex: "!?\\[.*?\\]\\(.*?\\)") {
                 for link in linkRanges {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownLinks(), range: link)
+                    self.setColor(range: link, color: NSColor.markdownLinks())
                 }
             }
             if let boldRanges = matches(regex: "\\*\\*.*?\\*\\*") {
                 for bold in boldRanges {
-                    textStorage.addAttribute(NSStrokeWidthAttributeName, value: -5, range: bold)
+                    self.setBold(range: bold)
                 }
             }
             if let strikeRanges = matches(regex: "~.*?~") {
                 for strike in strikeRanges {
-                    textStorage.addAttribute(NSStrikethroughStyleAttributeName, value: 2, range: strike)
+                    self.setStrike(range: strike)
                 }
             }
             if let numberedRanges = matches(regex: "\\d+\\.[\\S\\s]*?") {
                 for num in numberedRanges {
-                    textStorage.addAttribute(NSForegroundColorAttributeName, value: NSColor.markdownList(), range: num)
-                    textStorage.addAttribute(NSStrokeWidthAttributeName, value: -5, range: num)
+                    self.setColor(range: num, color: NSColor.markdownList())
+                    self.setBold(range: num)
                 }
             }
         }

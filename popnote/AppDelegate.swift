@@ -9,8 +9,9 @@
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTableViewDataSource {
+class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTableViewDataSource, NSWindowDelegate {
     let statusItem = NSStatusBar.system().statusItem(withLength: -2)
+    var canOpenPopup = false
     let popover = NSPopover()
     var notes = [Note]()
     var currentEditContent: String = ""
@@ -19,11 +20,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     @IBOutlet var editor: EditorView!
     @IBOutlet weak var window: NSWindow!
     @IBOutlet weak var noteTableView: NSTableView!
+    @IBOutlet weak var statusLabel: NSTextField!
+    
+    
     // MARK: - Pop Over
     
     func showPopup() {
-        if let button = statusItem.button {
-            popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
+        if (self.canOpenPopup) {
+            if let button = statusItem.button {
+                popover.show(relativeTo: button.bounds, of: button, preferredEdge: NSRectEdge.minY)
+            }
         }
     }
     
@@ -45,10 +51,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
         self.editor.textStorage?.mutableString.setString(self.currentEditContent)
         self.editor.font = StyleKit.codeFont
         self.currentSelectedTitle = nil
+        self.statusLabel.stringValue = "Press ⌘ + S to save your note..."
+        self.canOpenPopup = false
         self.fillData()
     }
     
     // MARK: - Editting
+    
+    @IBAction func newDocument(sender: AnyObject) {
+        self.currentSelectedTitle = nil
+        self.currentEditContent = ""
+        self.statusLabel.stringValue = "Press ⌘ + S to save your note..."
+        self.editor.textStorage?.mutableString.setString("")
+        self.fillData()
+    }
     
     @IBAction func deleteDocument(sender: AnyObject) {
         if (self.currentSelectedTitle != nil) {
@@ -97,6 +113,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     }
     
     func selectNote(title: String) {
+        self.statusLabel.stringValue = title
         self.currentSelectedTitle = title
         self.currentEditContent = (Note.getNote(title: title)?.content!)!
         self.editor.textStorage?.mutableString.setString(self.currentEditContent)
@@ -125,6 +142,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
         if self.noteTableView.selectedRow != -1 {
             self.selectNote(title: self.notes[self.noteTableView.selectedRow].title!)
         } else {
+            self.statusLabel.stringValue = "Press ⌘ + S to save your note..."
             self.currentSelectedTitle = nil
             self.currentEditContent = ""
             self.editor.textStorage?.mutableString.setString("")
@@ -132,6 +150,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     }
     
     // MARK: - App Delegate
+    
+    func applicationDidHide(_ notification: Notification) {
+        self.canOpenPopup = true
+    }
+    
+    func applicationDidBecomeActive(_ notification: Notification) {
+        self.canOpenPopup = false
+        self.fillData()
+    }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
@@ -144,10 +171,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
         
         self.noteTableView.delegate = self
         self.noteTableView.dataSource = self
+        self.window.delegate = self
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+    }
+    
+    // MARK: - Window Delegate
+    
+    func windowWillClose(_ notification: Notification) {
+        self.canOpenPopup = true
+    }
+    
+    func windowDidExpose(_ notification: Notification) {
+        self.canOpenPopup = false
     }
     
 
