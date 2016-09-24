@@ -33,7 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
         }
     }
     
-    func hidePopup(sender: AnyObject) {
+    func hidePopup(sender: AnyObject?) {
         popover.performClose(sender)
         self.canOpenPopup = true
     }
@@ -46,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
         }
     }
     
-    func showWindow(sender: AnyObject) {
+    func showWindow(sender: AnyObject?) {
         self.hidePopup(sender: sender)
         self.window.setIsVisible(true)
         self.editor.textStorage?.mutableString.setString(self.currentEditContent)
@@ -78,7 +78,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
         }
     }
     
-    @IBAction func saveDocument(sender: AnyObject) {
+    @IBAction func saveDocument(sender: AnyObject?) {
         if (self.currentSelectedTitle == nil) {
             let a = NSAlert()
             a.messageText = "Enter note title:"
@@ -131,6 +131,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDelegate, NSTable
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let item = self.notes[row]
         let cell = tableView.make(withIdentifier: (tableColumn?.identifier)!, owner: self) as! NSTableCellView
+        cell.textField?.font = StyleKit.codeFont
         cell.textField?.stringValue = item.title!
         return cell
     }

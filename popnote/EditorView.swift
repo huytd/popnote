@@ -74,6 +74,14 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
         self.textStorage?.removeAttribute(NSStrikethroughStyleAttributeName, range: range)
     }
     
+    // MARK: - Text View
+    override func didChangeText() {
+        let appDelegate  = (NSApplication.shared().delegate as! AppDelegate)
+        if appDelegate.currentSelectedTitle != nil {
+            appDelegate.saveDocument(sender: nil)
+        }
+    }
+    
     // MARK: - Text Storage
     
     func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions, range editedRange: NSRange, changeInLength delta: Int) {
