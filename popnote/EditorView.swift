@@ -13,6 +13,7 @@ class EditorView: NSTextView, NSTextViewDelegate, NSTextStorageDelegate {
         self.delegate = self
         self.textStorage?.delegate = self
         self.font = StyleKit.codeFont
+        self.selectedTextAttributes = [NSBackgroundColorAttributeName: NSColor(hex: 0xffecb3)]
     }
     
     func lines(startWith: String) -> [NSRange]? {
